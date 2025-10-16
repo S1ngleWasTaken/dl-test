@@ -1,0 +1,31 @@
+---
+import '../styles/global.css'
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title} | Danceline</title>
+  </head>
+  <body>
+    <header>
+      <nav class="w-full bg-amber-200">
+        <a href="/">Domů</a>
+        <a href="/o-nas">O nás</a>
+       </nav>
+    </header>
+    <main>
+      <slot /> {/* Zde se vloží hlavní obsah */}
+    </main>
+    <footer>
+    <p>&copy; 2025 Honza</p>
+    </footer>
+  </body>
+</html>
