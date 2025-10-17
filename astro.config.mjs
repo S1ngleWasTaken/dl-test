@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 
 import tailwindcss from '@tailwindcss/vite';
 
@@ -11,6 +11,12 @@ import node from '@astrojs/node';
 export default defineConfig({
   vite: {
     plugins: [tailwindcss()]
+  },
+  env: {
+    schema: {
+      OAUTH_GITHUB_CLIENT_ID: envField.string({ context: "server", access: "secret" }),
+      OAUTH_GITHUB_CLIENT_SECRET: envField.string({ context: "server", access: "secret" }),
+    },
   },
 
   integrations: [react()],

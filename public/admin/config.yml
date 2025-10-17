@@ -3,7 +3,7 @@ backend:
   repo: S1ngleWasTaken/dl-test
   branch: main
   site_domain: localhost:4321
-  base_url: http://localhost:4321
+  base_url: http://localhost:4321/
   auth_endpoint: oauth
 
 media_folder: src/assets/img
