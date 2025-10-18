@@ -5,6 +5,7 @@ import { OAUTH_GITHUB_CLIENT_ID, OAUTH_GITHUB_CLIENT_SECRET } from "astro:env/se
 const tokenUrl = "https://github.com/login/oauth/access_token";
 
 export const GET: APIRoute = async ({ url, redirect }) => {
+	console.log(OAUTH_GITHUB_CLIENT_ID);
 	const data = {
 		code: url.searchParams.get("code"),
 		client_id: OAUTH_GITHUB_CLIENT_ID,

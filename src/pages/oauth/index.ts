@@ -5,5 +5,6 @@ import { OAUTH_GITHUB_CLIENT_ID } from "astro:env/server";
 const authUrl = `https://github.com/login/oauth/authorize?client_id=${OAUTH_GITHUB_CLIENT_ID}&scope=repo,user`;
 
 export const GET: APIRoute = ({ redirect }) => {
+	console.log(OAUTH_GITHUB_CLIENT_ID);
 	return redirect(authUrl);
 };
