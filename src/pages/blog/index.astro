@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+// Tohle je ta magie! Vytáhne VŠECHNY .md soubory z 'src/content/blog'
+// a zvaliduje je proti tvému schématu.
+const allPosts = await getCollection('blog');
+
+// Seřadíme je od nejnovějšího po nejstarší
+allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<BaseLayout title='Blog'>
+    <div>
+        <h1>Můj Blog</h1>
+        <style>
+            /* Jen aby to nějak vypadalo */
+  ul { list-style: none; padding: 0; }
+  li { margin-bottom: 2rem; }
+  a { text-decoration: none; color: #333; font-size: 1.5rem; }
+  p { color: #666; }
+</style>
+
+<ul>
+    {allPosts.map(post => (
+        <li>
+      <a href={`/blog/${post.slug}/`}>
+        <strong>{post.data.title}</strong>
+      </a>
+      <p>Vydáno: {post.data.date.toLocaleDateString('cs-CZ')}</p>
+      <p>{post.data.description}</p>
+    </li>
+  ))}
+</ul>
+</div>
+</BaseLayout>

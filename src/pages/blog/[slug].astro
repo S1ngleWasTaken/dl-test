@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, getEntry } from 'astro:content';
+// import { Content } from 'astro:content'; // <-- SUPER DŮLEŽITÉ
+
+// 1. Řekneme Astru, jaké stránky má vygenerovat
+//    (Toto je nutné i v SSR režimu pro obsahové stránky)
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog');
+  
+  return allPosts.map(post => ({
+    params: { slug: post.slug }, // 'slug' je název souboru bez .md
+  }));
+}
+
+// 2. Získáme data pro TUTO konkrétní stránku
+const { slug } = Astro.params;
+
+// Použijeme getEntry k bezpečnému načtení jednoho článku
+const post = await getEntry('blog', slug!); // '!' říká TS, že slug nebude undefined
+
+// Co kdyby někdo zadal blbost do URL?
+if (!post) {
+  // Vrátíme 404
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+// 3. Vykreslíme Markdown obsah
+const { Content } = await post.render();
+---
+<BaseLayout title={post.data.title}>
+<h1>{post.data.title}</h1>
+<p><em>Publikováno: {post.data.date.toLocaleDateString('cs-CZ')}</em></p>
+
+{post.data.ogImage && (
+  <img src={post.data.ogImage} alt={`Obrázek pro ${post.data.title}`} />
+)}
+
+<hr />
+
+<article>
+  <Content />
+</article>
+
+<style>
+  /* Aby se obrázky nezbláznily */
+  img { max-width: 100%; height: auto; }
+  article { line-height: 1.6; }
+</style>
+</BaseLayout>
