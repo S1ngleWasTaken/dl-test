@@ -1,0 +1,49 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main # Změň na název tvé hlavní větve, např. master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up SSH connection
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add deploy host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        env:
+          # POUZE pro jistotu, pokud by build potreboval nejake promenne.
+          # PM2 uz je nacte z ecosystem.config.cjs
+          # Ale pokud by npm run build na GH Actions neco potreboval, dal by se to sem.
+          NODE_ENV: production
+          # OAUTH_GITHUB_CLIENT_ID: ${{ secrets.OAUTH_GITHUB_CLIENT_ID }} # Priklad, pokud by build potreboval client ID
+        run: |
+          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            # Jdi do adresáře tvého projektu
+            cd /var/www/nosekjan.tech/dl-test/
+
+            # Stáhni nejnovější kód z Gitu
+            git pull origin main
+
+            # Nainstaluj závislosti (jen pokud jsou nové)
+            npm install
+
+            # Sestav Astro web
+            npm run build
+
+            # Restartuj PM2 proces
+            pm2 restart dl-web
+          EOF
